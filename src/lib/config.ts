@@ -6,14 +6,14 @@
 
 import { Plans, AIModelOption } from '@/types';
 
-// Validate required environment variables
+// Validate required environment variables (server-side only)
 const requiredEnvVars = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
 ] as const;
 
-// Check for missing env vars in development
-if (process.env.NODE_ENV === 'development') {
+// Check for missing env vars in development - only on server to avoid false positives
+if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
   const missing = requiredEnvVars.filter(
     (key) => !process.env[key]
   );
@@ -40,6 +40,7 @@ export const config = {
     publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
     prices: {
+      free: '', // No Stripe price for free plan
       standard: process.env.STRIPE_STANDARD_PRICE_ID!,
       pro: process.env.STRIPE_PRO_PRICE_ID!,
     },
@@ -59,97 +60,166 @@ export const config = {
   },
 } as const;
 
+// All available AI models (available on all paid plans)
+const ALL_AI_MODELS = [
+  // OpenAI Models
+  'openai/gpt-4o',
+  'openai/gpt-4o-mini',
+  'openai/gpt-4-turbo',
+  'openai/o1-preview',
+  'openai/o1-mini',
+  // Anthropic Models
+  'anthropic/claude-sonnet-4',
+  'anthropic/claude-3.5-sonnet',
+  'anthropic/claude-3-opus',
+  'anthropic/claude-3-haiku',
+  // Google Gemini Models
+  'google/gemini-2.0-flash-exp',
+  'google/gemini-pro-1.5',
+  'google/gemini-flash-1.5',
+];
+
 // Subscription Plans Configuration
 export const PLANS: Plans = {
+  free: {
+    name: 'Free',
+    price: 0,
+    priceId: config.stripe.prices.free,
+    rowLimit: 300,
+    aiModels: ALL_AI_MODELS,
+    features: [
+      '300 rows per month',
+      'All AI Models (GPT-4o, Claude, Gemini)',
+      'CSV Export',
+      'Community Support',
+    ],
+  },
   standard: {
     name: 'Standard',
-    price: 0,
+    price: 19,
     priceId: config.stripe.prices.standard,
-    rowLimit: 1000,
-    aiModels: ['openai/gpt-3.5-turbo', 'mistralai/mixtral-8x7b-instruct'],
+    rowLimit: 5000,
+    aiModels: ALL_AI_MODELS,
     features: [
-      '1,000 rows per month',
-      'Standard AI Models',
+      '5,000 rows per month',
+      'All AI Models (GPT-4o, Claude, Gemini)',
       'CSV Export',
       'Email Support',
       'Basic Analytics',
     ],
+    isPopular: true,
   },
   pro: {
     name: 'Pro',
-    price: 29,
+    price: 49,
     priceId: config.stripe.prices.pro,
-    rowLimit: -1, // Unlimited
-    aiModels: [
-      'openai/gpt-3.5-turbo',
-      'openai/gpt-4',
-      'openai/gpt-4-turbo',
-      'anthropic/claude-3-opus',
-      'anthropic/claude-3-sonnet',
-      'mistralai/mixtral-8x7b-instruct',
-    ],
+    rowLimit: 20000,
+    aiModels: ALL_AI_MODELS,
     features: [
-      'Unlimited rows',
-      'GPT-4 & Claude 3',
+      '20,000 rows per month',
+      'All AI Models (GPT-4o, Claude, Gemini)',
       'Priority Support',
       'API Access',
       'Auto-scheduling',
       'Advanced Analytics',
       'Team Collaboration',
     ],
-    isPopular: true,
   },
 };
 
 // Available AI Models
 export const AI_MODELS: AIModelOption[] = [
+  // OpenAI Models
   {
-    id: 'openai/gpt-3.5-turbo',
-    name: 'GPT-3.5 Turbo',
-    description: 'Fast and efficient for most tasks',
-    tier: 'standard',
+    id: 'openai/gpt-4o',
+    name: 'GPT-4o',
+    description: 'Most capable OpenAI model, multimodal',
+    tier: 'free',
   },
   {
-    id: 'mistralai/mixtral-8x7b-instruct',
-    name: 'Mixtral 8x7B',
-    description: 'Open source, great for general tasks',
-    tier: 'standard',
-  },
-  {
-    id: 'openai/gpt-4',
-    name: 'GPT-4',
-    description: 'Most capable, best for complex transformations',
-    tier: 'pro',
+    id: 'openai/gpt-4o-mini',
+    name: 'GPT-4o Mini',
+    description: 'Fast and cost-effective',
+    tier: 'free',
   },
   {
     id: 'openai/gpt-4-turbo',
     name: 'GPT-4 Turbo',
-    description: 'Latest GPT-4 with improved speed',
-    tier: 'pro',
+    description: 'Powerful with large context window',
+    tier: 'free',
+  },
+  {
+    id: 'openai/o1-preview',
+    name: 'o1 Preview',
+    description: 'Advanced reasoning capabilities',
+    tier: 'free',
+  },
+  {
+    id: 'openai/o1-mini',
+    name: 'o1 Mini',
+    description: 'Fast reasoning model',
+    tier: 'free',
+  },
+  // Anthropic Models
+  {
+    id: 'anthropic/claude-sonnet-4',
+    name: 'Claude Sonnet 4',
+    description: 'Latest Claude model, best performance',
+    tier: 'free',
+  },
+  {
+    id: 'anthropic/claude-3.5-sonnet',
+    name: 'Claude 3.5 Sonnet',
+    description: 'Excellent balance of speed and capability',
+    tier: 'free',
   },
   {
     id: 'anthropic/claude-3-opus',
     name: 'Claude 3 Opus',
-    description: 'Best for nuanced understanding',
-    tier: 'pro',
+    description: 'Best for complex, nuanced tasks',
+    tier: 'free',
   },
   {
-    id: 'anthropic/claude-3-sonnet',
-    name: 'Claude 3 Sonnet',
-    description: 'Balanced performance and speed',
-    tier: 'pro',
+    id: 'anthropic/claude-3-haiku',
+    name: 'Claude 3 Haiku',
+    description: 'Fastest Claude model',
+    tier: 'free',
+  },
+  // Google Gemini Models
+  {
+    id: 'google/gemini-2.0-flash-exp',
+    name: 'Gemini 2.0 Flash',
+    description: 'Latest Gemini, experimental features',
+    tier: 'free',
+  },
+  {
+    id: 'google/gemini-pro-1.5',
+    name: 'Gemini Pro 1.5',
+    description: 'Advanced reasoning and long context',
+    tier: 'free',
+  },
+  {
+    id: 'google/gemini-flash-1.5',
+    name: 'Gemini Flash 1.5',
+    description: 'Fast and efficient',
+    tier: 'free',
   },
 ];
 
 // Usage Limits
 export const USAGE_LIMITS = {
+  free: {
+    monthlyRows: 300,
+    maxFileSize: 2 * 1024 * 1024, // 2MB
+    maxColumns: 10,
+  },
   standard: {
-    monthlyRows: 1000,
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    maxColumns: 20,
+    monthlyRows: 5000,
+    maxFileSize: 10 * 1024 * 1024, // 10MB
+    maxColumns: 30,
   },
   pro: {
-    monthlyRows: -1, // Unlimited
+    monthlyRows: 20000,
     maxFileSize: 50 * 1024 * 1024, // 50MB
     maxColumns: 100,
   },

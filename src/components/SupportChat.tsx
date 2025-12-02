@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, X, Send, MessageCircle } from 'lucide-react';
+import { useStore } from '@/hooks/useStore';
 
 interface ChatMessage {
   role: 'user' | 'agent';
@@ -13,6 +14,7 @@ interface ChatMessage {
 }
 
 export function SupportChat() {
+  const { theme } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
@@ -63,25 +65,35 @@ export function SupportChat() {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {isOpen && (
-        <div className="mb-4 w-80 md:w-96 h-96 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200">
+        <div className={`mb-4 w-80 md:w-96 h-96 backdrop-blur-xl border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200 ${
+          theme === 'dark'
+            ? 'bg-slate-900/95 border-slate-700'
+            : 'bg-white/95 border-slate-200 shadow-xl'
+        }`}>
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-violet-900/80 to-slate-900 border-b border-slate-700 flex justify-between items-center">
+          <div className={`p-4 border-b flex justify-between items-center ${
+            theme === 'dark'
+              ? 'bg-gradient-to-r from-violet-900/80 to-slate-900 border-slate-700'
+              : 'bg-gradient-to-r from-violet-600 to-indigo-600 border-transparent'
+          }`}>
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-violet-500 rounded-lg">
+              <div className={`p-1.5 rounded-lg ${theme === 'dark' ? 'bg-violet-500' : 'bg-white/20'}`}>
                 <Bot size={16} className="text-white" />
               </div>
               <span className="font-semibold text-white">Support Assistant</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-white/70 hover:text-white transition-colors"
             >
               <X size={18} />
             </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4">
+          <div className={`flex-1 p-4 overflow-y-auto space-y-4 ${
+            theme === 'dark' ? '' : 'bg-slate-50/50'
+          }`}>
             {chatHistory.map((msg, i) => (
               <div
                 key={i}
@@ -91,7 +103,9 @@ export function SupportChat() {
                   className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                     msg.role === 'user'
                       ? 'bg-violet-600 text-white rounded-br-none'
-                      : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none'
+                      : theme === 'dark'
+                        ? 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none'
+                        : 'bg-white text-slate-700 border border-slate-200 rounded-bl-none shadow-sm'
                   }`}
                 >
                   {msg.content}
@@ -100,7 +114,11 @@ export function SupportChat() {
             ))}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-slate-800 text-slate-200 border border-slate-700 rounded-2xl rounded-bl-none px-4 py-2.5 text-sm">
+                <div className={`rounded-2xl rounded-bl-none px-4 py-2.5 text-sm ${
+                  theme === 'dark'
+                    ? 'bg-slate-800 text-slate-200 border border-slate-700'
+                    : 'bg-white text-slate-700 border border-slate-200 shadow-sm'
+                }`}>
                   <span className="flex gap-1">
                     <span className="animate-bounce">.</span>
                     <span className="animate-bounce" style={{ animationDelay: '0.1s' }}>.</span>
@@ -113,10 +131,18 @@ export function SupportChat() {
           </div>
 
           {/* Input */}
-          <div className="p-3 bg-slate-900 border-t border-slate-800">
+          <div className={`p-3 border-t ${
+            theme === 'dark'
+              ? 'bg-slate-900 border-slate-800'
+              : 'bg-white border-slate-100'
+          }`}>
             <div className="flex gap-2">
               <input
-                className="flex-1 bg-slate-800 border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none placeholder-slate-500"
+                className={`flex-1 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-violet-500 focus:outline-none border ${
+                  theme === 'dark'
+                    ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500'
+                    : 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
+                }`}
                 placeholder="Type a message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -138,7 +164,9 @@ export function SupportChat() {
         onClick={() => setIsOpen(!isOpen)}
         className={`p-4 rounded-full shadow-lg shadow-violet-500/30 transition-all duration-300 ${
           isOpen
-            ? 'bg-slate-800 text-white rotate-90'
+            ? theme === 'dark'
+              ? 'bg-slate-800 text-white rotate-90'
+              : 'bg-slate-200 text-slate-700 rotate-90'
             : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:scale-110'
         }`}
       >

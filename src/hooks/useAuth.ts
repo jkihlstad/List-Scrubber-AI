@@ -35,15 +35,17 @@ export function useAuth() {
       }
 
       // Fetch subscription
-      const { data: sub } = await supabase
+      const { data: subs } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single();
+        .limit(1);
 
-      if (sub) {
-        setSubscription(sub);
+      if (subs && subs.length > 0) {
+        setSubscription(subs[0]);
+      } else {
+        setSubscription(null);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -124,8 +126,18 @@ export function useAuth() {
     return { error };
   };
 
-  const getPlan = (): 'standard' | 'pro' => {
-    if (!subscription) return 'standard';
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    return { error };
+  };
+
+  const getPlan = (): 'free' | 'standard' | 'pro' => {
+    if (!subscription) return 'free';
     return subscription.plan_id;
   };
 
@@ -137,6 +149,7 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
+    signInWithGoogle,
     resetPassword,
     updatePassword,
     getPlan,

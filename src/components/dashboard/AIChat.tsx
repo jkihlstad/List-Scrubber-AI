@@ -24,6 +24,7 @@ export function AIChat() {
     setIsProcessing,
     setDataset,
     incrementAiCalls,
+    theme,
   } = useStore();
   const { isPro, plan } = useSubscription();
 
@@ -95,14 +96,24 @@ export function AIChat() {
   const isProModel = selectedModelInfo?.tier === 'pro';
 
   return (
-    <div className="flex flex-col h-full border-violet-500/20 shadow-[0_0_40px_-10px_rgba(139,92,246,0.15)] bg-slate-900/60 backdrop-blur-md border rounded-2xl overflow-hidden">
+    <div className={`flex flex-col h-full backdrop-blur-md border rounded-2xl overflow-hidden ${
+      theme === 'dark'
+        ? 'border-violet-500/20 shadow-[0_0_40px_-10px_rgba(139,92,246,0.15)] bg-slate-900/60'
+        : 'border-violet-200/60 shadow-lg shadow-violet-200/30 bg-white/90'
+    }`}>
       {/* Header */}
-      <div className="p-4 border-b border-violet-500/10 bg-gradient-to-r from-violet-500/5 to-transparent flex items-center justify-between">
+      <div className={`p-4 border-b flex items-center justify-between ${
+        theme === 'dark'
+          ? 'border-violet-500/10 bg-gradient-to-r from-violet-500/5 to-transparent'
+          : 'border-violet-100 bg-gradient-to-r from-violet-50 to-transparent'
+      }`}>
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-violet-500/20 rounded-lg border border-violet-500/30">
-            <Sparkles size={18} className="text-violet-300" />
+          <div className={`p-1.5 rounded-lg border ${
+            theme === 'dark' ? 'bg-violet-500/20 border-violet-500/30' : 'bg-violet-100 border-violet-200'
+          }`}>
+            <Sparkles size={18} className={theme === 'dark' ? 'text-violet-300' : 'text-violet-600'} />
           </div>
-          <h3 className="font-semibold text-violet-100">AI Scrubber</h3>
+          <h3 className={`font-semibold ${theme === 'dark' ? 'text-violet-100' : 'text-violet-900'}`}>AI Scrubber</h3>
         </div>
         <Badge type="purple">
           {selectedModelInfo?.name.split(' ').slice(-1)[0] || 'GPT-3.5'}
@@ -110,7 +121,9 @@ export function AIChat() {
       </div>
 
       {/* Model Selector */}
-      <div className="px-4 py-2 border-b border-slate-700/30 bg-slate-800/20">
+      <div className={`px-4 py-2 border-b ${
+        theme === 'dark' ? 'border-slate-700/30 bg-slate-800/20' : 'border-gray-200 bg-gray-50/50'
+      }`}>
         <Select
           value={selectedModel}
           onChange={setSelectedModel}
@@ -130,7 +143,9 @@ export function AIChat() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-900/30">
+      <div className={`flex-1 min-h-0 p-4 overflow-y-auto space-y-4 ${
+        theme === 'dark' ? 'bg-slate-900/30' : 'bg-gray-50/30'
+      }`}>
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -143,8 +158,10 @@ export function AIChat() {
                 msg.role === 'user'
                   ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-br-none'
                   : msg.role === 'error'
-                  ? 'bg-red-500/10 text-red-200 border border-red-500/20'
-                  : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none'
+                  ? 'bg-red-500/10 text-red-300 border border-red-500/20'
+                  : theme === 'dark'
+                    ? 'bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none'
+                    : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
               }`}
             >
               {msg.content}
@@ -153,7 +170,9 @@ export function AIChat() {
         ))}
         {isProcessing && (
           <div className="flex justify-start animate-pulse">
-            <div className="bg-slate-800 rounded-2xl px-4 py-3 flex items-center gap-2 text-sm text-slate-400 border border-slate-700">
+            <div className={`rounded-2xl px-4 py-3 flex items-center gap-2 text-sm border ${
+              theme === 'dark' ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-white text-gray-500 border-gray-200'
+            }`}>
               <Loader2 size={14} className="animate-spin text-violet-400" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400 font-medium">
                 Processing data...
@@ -165,14 +184,20 @@ export function AIChat() {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-slate-700/50 bg-slate-800/30 backdrop-blur-md">
+      <div className={`p-4 border-t backdrop-blur-md ${
+        theme === 'dark' ? 'border-slate-700/50 bg-slate-800/30' : 'border-gray-200 bg-gray-50/50'
+      }`}>
         <div className="relative">
           <input
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder='Describe changes (e.g., "Fix broken emails")'
-            className="w-full bg-slate-900/80 border border-slate-600 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent focus:outline-none placeholder-slate-500 shadow-inner"
+            className={`w-full rounded-xl pl-4 pr-12 py-3 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent focus:outline-none shadow-inner ${
+              theme === 'dark'
+                ? 'bg-slate-900/80 border border-slate-600 text-white placeholder-slate-500'
+                : 'bg-white border border-gray-300 text-gray-900 placeholder-gray-400'
+            }`}
             onKeyDown={(e) => e.key === 'Enter' && !isProcessing && handleSubmit()}
             disabled={isProcessing || dataset.length === 0}
           />
@@ -184,8 +209,10 @@ export function AIChat() {
             <Wand2 size={16} />
           </button>
         </div>
-        <p className="text-[10px] text-slate-500 mt-2 text-center flex items-center justify-center gap-1">
-          <Zap size={10} className="text-amber-400" />
+        <p className={`text-[10px] mt-2 text-center flex items-center justify-center gap-1 ${
+          theme === 'dark' ? 'text-slate-500' : 'text-gray-500'
+        }`}>
+          <Zap size={10} className="text-amber-500" />
           Powered by OpenRouter LLMs
         </p>
       </div>

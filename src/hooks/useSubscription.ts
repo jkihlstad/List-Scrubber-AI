@@ -97,17 +97,14 @@ export function useSubscription() {
   }, []);
 
   const canProcessRows = useCallback((rowCount: number): boolean => {
-    if (limits.monthlyRows === -1) return true;
     return rowsProcessed + rowCount <= limits.monthlyRows;
   }, [rowsProcessed, limits.monthlyRows]);
 
-  const getRemainingRows = useCallback((): number | 'unlimited' => {
-    if (limits.monthlyRows === -1) return 'unlimited';
+  const getRemainingRows = useCallback((): number => {
     return Math.max(0, limits.monthlyRows - rowsProcessed);
   }, [rowsProcessed, limits.monthlyRows]);
 
   const getUsagePercentage = useCallback((): number => {
-    if (limits.monthlyRows === -1) return 0;
     return Math.min(100, (rowsProcessed / limits.monthlyRows) * 100);
   }, [rowsProcessed, limits.monthlyRows]);
 

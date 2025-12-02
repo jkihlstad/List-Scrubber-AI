@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
+import { useStore } from '@/hooks/useStore';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -28,25 +29,35 @@ export function Button({
   type = 'button',
   loading = false,
 }: ButtonProps) {
-  const baseStyle =
-    'flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95';
+  const { theme } = useStore();
 
-  const variants = {
-    primary:
-      'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/30 border border-transparent',
-    secondary:
-      'bg-slate-800/50 hover:bg-slate-700/50 text-slate-200 border border-slate-700 backdrop-blur-sm shadow-sm',
-    ghost: 'bg-transparent hover:bg-slate-800/50 text-slate-400 hover:text-white',
-    danger:
-      'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20',
+  const baseStyle =
+    'flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transform active:scale-95';
+
+  const getVariantStyles = () => {
+    const variants = {
+      primary:
+        'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/30 border border-transparent',
+      secondary: theme === 'dark'
+        ? 'bg-slate-800/50 hover:bg-slate-700/50 text-slate-200 border border-slate-700 backdrop-blur-sm shadow-sm'
+        : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-sm hover:shadow',
+      ghost: theme === 'dark'
+        ? 'bg-transparent hover:bg-slate-800/50 text-slate-400 hover:text-white'
+        : 'bg-transparent hover:bg-slate-100 text-slate-500 hover:text-slate-800',
+      danger:
+        'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20',
+    };
+    return variants[variant];
   };
+
+  const focusOffset = theme === 'dark' ? 'focus:ring-offset-slate-900' : 'focus:ring-offset-white';
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${baseStyle} ${variants[variant]} ${className}`}
+      className={`${baseStyle} ${focusOffset} ${getVariantStyles()} ${className}`}
     >
       {loading ? (
         <svg

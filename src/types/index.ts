@@ -16,7 +16,7 @@ export interface Subscription {
   user_id: string;
   stripe_customer_id: string;
   stripe_subscription_id: string;
-  plan_id: 'standard' | 'pro';
+  plan_id: 'free' | 'standard' | 'pro';
   status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
   current_period_start: string;
   current_period_end: string;
@@ -62,6 +62,7 @@ export interface PlanFeatures {
 }
 
 export interface Plans {
+  free: PlanFeatures;
   standard: PlanFeatures;
   pro: PlanFeatures;
 }
@@ -76,7 +77,7 @@ export interface AIModelOption {
   id: string;
   name: string;
   description: string;
-  tier: 'standard' | 'pro';
+  tier: 'free' | 'standard' | 'pro';
 }
 
 export interface BillingInfo {

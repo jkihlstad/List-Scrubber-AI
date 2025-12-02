@@ -22,10 +22,12 @@ import {
 import { Card, Button, Input, Badge } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useStore } from '@/hooks/useStore';
 import { createClient } from '@/lib/supabase/client';
 import { PLANS } from '@/lib/config';
 
 export default function SettingsPage() {
+  const { theme } = useStore();
   const { user, authUser } = useAuth();
   const {
     subscription,
@@ -103,19 +105,23 @@ export default function SettingsPage() {
   return (
     <div className="p-4 md:p-6 lg:p-10 max-w-[1600px] mx-auto w-full">
       <div className="max-w-3xl mx-auto py-4 md:py-8 animate-in slide-in-from-right-10 duration-500">
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8">Settings</h1>
+        <h1 className={`text-2xl md:text-3xl font-bold mb-6 md:mb-8 ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Settings</h1>
 
         {/* User Profile Section */}
-        <Card className="p-6 md:p-8 mb-6 md:mb-8 border-slate-700">
+        <Card className={`p-6 md:p-8 mb-6 md:mb-8 ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-violet-500/10 rounded-lg border border-violet-500/20">
-              <User size={24} className="text-violet-400" />
+            <div className={`p-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-violet-500/10 border-violet-500/20'
+                : 'bg-violet-50 border-violet-200'
+            }`}>
+              <User size={24} className={theme === 'dark' ? 'text-violet-400' : 'text-violet-600'} />
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-semibold text-white">
+              <h3 className={`text-lg md:text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                 Profile Settings
               </h3>
-              <p className="text-sm text-slate-400">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                 Manage your account information
               </p>
             </div>
@@ -141,10 +147,14 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                   Member Since
                 </label>
-                <div className="flex items-center gap-2 p-3 bg-slate-900 border border-slate-600 rounded-xl text-slate-400">
+                <div className={`flex items-center gap-2 p-3 border rounded-xl ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border-slate-600 text-slate-400'
+                    : 'bg-slate-50 border-slate-200 text-slate-500'
+                }`}>
                   <Calendar size={18} />
                   {user?.created_at
                     ? new Date(user.created_at).toLocaleDateString()
@@ -152,19 +162,25 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
                   Account Status
                 </label>
-                <div className="flex items-center gap-2 p-3 bg-slate-900 border border-slate-600 rounded-xl">
+                <div className={`flex items-center gap-2 p-3 border rounded-xl ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border-slate-600'
+                    : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-emerald-400">Active</span>
+                  <span className={theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600'}>Active</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-slate-700/50">
+            <div className={`flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t ${
+              theme === 'dark' ? 'border-slate-700/50' : 'border-slate-200'
+            }`}>
               {saveSuccess && (
-                <div className="flex items-center gap-2 text-emerald-400 text-sm">
+                <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600'}`}>
                   <CheckCircle2 size={16} />
                   Profile saved successfully
                 </div>
@@ -182,34 +198,42 @@ export default function SettingsPage() {
         </Card>
 
         {/* Subscription Section */}
-        <Card className="p-6 md:p-8 mb-6 md:mb-8 border-slate-700">
+        <Card className={`p-6 md:p-8 mb-6 md:mb-8 ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-              <CreditCard size={24} className="text-emerald-400" />
+            <div className={`p-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-emerald-500/10 border-emerald-500/20'
+                : 'bg-emerald-50 border-emerald-200'
+            }`}>
+              <CreditCard size={24} className={theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600'} />
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-semibold text-white">
+              <h3 className={`text-lg md:text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                 Subscription & Billing
               </h3>
-              <p className="text-sm text-slate-400">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                 Manage your plan and payment details
               </p>
             </div>
           </div>
 
           {/* Current Plan Info */}
-          <div className="bg-slate-800/50 rounded-xl p-4 md:p-6 mb-6 border border-slate-700/50">
+          <div className={`rounded-xl p-4 md:p-6 mb-6 border ${
+            theme === 'dark'
+              ? 'bg-slate-800/50 border-slate-700/50'
+              : 'bg-slate-50 border-slate-200'
+          }`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-lg font-semibold text-white">
+                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                     {planDetails.name} Plan
                   </h4>
                   <Badge type={isPro ? 'purple' : 'neutral'}>
                     {isPro ? 'Pro' : 'Free'}
                   </Badge>
                 </div>
-                <p className="text-slate-400 text-sm">
+                <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                   ${planDetails.price}/month
                 </p>
               </div>
@@ -220,16 +244,16 @@ export default function SettingsPage() {
 
             {/* Usage Stats */}
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-slate-900/50 rounded-lg p-3">
-                <p className="text-xs text-slate-500 mb-1">Rows Used</p>
-                <p className="text-lg font-semibold text-white">
+              <div className={`rounded-lg p-3 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-white border border-slate-200'}`}>
+                <p className={`text-xs mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>Rows Used</p>
+                <p className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                   {rowsProcessed}
-                  {!isPro && <span className="text-slate-500"> / 1,000</span>}
+                  {!isPro && <span className={theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}> / 1,000</span>}
                 </p>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-3">
-                <p className="text-xs text-slate-500 mb-1">Rows Remaining</p>
-                <p className="text-lg font-semibold text-white">
+              <div className={`rounded-lg p-3 ${theme === 'dark' ? 'bg-slate-900/50' : 'bg-white border border-slate-200'}`}>
+                <p className={`text-xs mb-1 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>Rows Remaining</p>
+                <p className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                   {typeof remainingRows === 'number'
                     ? remainingRows.toLocaleString()
                     : 'Unlimited'}
@@ -239,9 +263,9 @@ export default function SettingsPage() {
 
             {/* Next Billing Date */}
             {subscription && (
-              <div className="text-sm text-slate-400">
+              <div className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                 {subscription.cancel_at_period_end ? (
-                  <span className="text-amber-400">
+                  <span className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'}>
                     Access ends:{' '}
                     {new Date(subscription.current_period_end).toLocaleDateString()}
                   </span>
@@ -291,16 +315,20 @@ export default function SettingsPage() {
         </Card>
 
         {/* Notifications Section */}
-        <Card className="p-6 md:p-8 mb-6 md:mb-8 border-slate-700">
+        <Card className={`p-6 md:p-8 mb-6 md:mb-8 ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-              <Bell size={24} className="text-amber-400" />
+            <div className={`p-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-amber-500/10 border-amber-500/20'
+                : 'bg-amber-50 border-amber-200'
+            }`}>
+              <Bell size={24} className={theme === 'dark' ? 'text-amber-400' : 'text-amber-600'} />
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-semibold text-white">
+              <h3 className={`text-lg md:text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                 Notifications
               </h3>
-              <p className="text-sm text-slate-400">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                 Configure email preferences
               </p>
             </div>
@@ -314,11 +342,13 @@ export default function SettingsPage() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl"
+                className={`flex items-center justify-between p-3 rounded-xl ${
+                  theme === 'dark' ? 'bg-slate-800/30' : 'bg-slate-50'
+                }`}
               >
                 <div>
-                  <p className="text-white font-medium">{item.label}</p>
-                  <p className="text-sm text-slate-400">{item.desc}</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>{item.label}</p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{item.desc}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -326,7 +356,9 @@ export default function SettingsPage() {
                     defaultChecked
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-700 peer-focus:ring-2 peer-focus:ring-violet-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600" />
+                  <div className={`w-11 h-6 peer-focus:ring-2 peer-focus:ring-violet-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600 ${
+                    theme === 'dark' ? 'bg-slate-700' : 'bg-slate-300'
+                  }`} />
                 </label>
               </div>
             ))}
@@ -334,16 +366,16 @@ export default function SettingsPage() {
         </Card>
 
         {/* Danger Zone */}
-        <Card className="p-6 md:p-8 border-red-500/20 bg-red-500/5">
+        <Card className={`p-6 md:p-8 border-red-500/20 ${theme === 'dark' ? 'bg-red-500/5' : 'bg-red-50/50'}`}>
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
               <Shield size={24} className="text-red-400" />
             </div>
             <div>
-              <h3 className="text-lg md:text-xl font-semibold text-white">
+              <h3 className={`text-lg md:text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>
                 Danger Zone
               </h3>
-              <p className="text-sm text-slate-400">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                 Irreversible account actions
               </p>
             </div>
@@ -351,7 +383,7 @@ export default function SettingsPage() {
 
           <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4 flex items-start gap-3">
             <AlertCircle size={20} className="text-red-400 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-red-200/80">
+            <p className={`text-sm ${theme === 'dark' ? 'text-red-200/80' : 'text-red-600'}`}>
               These actions cannot be undone. Please proceed with caution.
             </p>
           </div>

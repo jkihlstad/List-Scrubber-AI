@@ -34,8 +34,11 @@ interface AppState {
   // UI State
   sidebarOpen: boolean;
   activeTab: string;
+  theme: 'light' | 'dark';
   setSidebarOpen: (open: boolean) => void;
   setActiveTab: (tab: string) => void;
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleTheme: () => void;
 
   // Usage tracking
   rowsProcessed: number;
@@ -94,8 +97,11 @@ export const useStore = create<AppState>()(
       // UI State
       sidebarOpen: true,
       activeTab: 'dashboard',
+      theme: 'dark',
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
       setActiveTab: (activeTab) => set({ activeTab }),
+      setTheme: (theme) => set({ theme }),
+      toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
 
       // Usage tracking
       rowsProcessed: 0,
@@ -109,8 +115,18 @@ export const useStore = create<AppState>()(
     {
       name: 'cleandata-storage',
       partialize: (state) => ({
+        // Persist dataset and file info
+        dataset: state.dataset,
+        fileName: state.fileName,
+        // Persist chat messages
+        messages: state.messages,
+        // Persist settings
         selectedModel: state.selectedModel,
         sidebarOpen: state.sidebarOpen,
+        theme: state.theme,
+        // Persist usage tracking
+        rowsProcessed: state.rowsProcessed,
+        aiCallsMade: state.aiCallsMade,
       }),
     }
   )
